@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-	  <!--路由占位符 -->
+	 <!--路由占位符 -->
 	 <router-view>
+		 
 		 
 	 </router-view>
     <!-- <img alt="Vue logo" src="./assets/logo.png">
