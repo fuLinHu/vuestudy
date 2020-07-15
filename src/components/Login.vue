@@ -4,19 +4,19 @@
 			<div class="header">
 				<img src="../assets/logo.png" />
 			</div>
-			<el-form  label-width="0px" class="login_form">
+			<el-form ref="loginFormRef" :model="loginFrom" :rules="loginFromRules"  label-width="0px" class="login_form">
 				<!-- 用户名 -->
-			  <el-form-item>
-			    <el-input></el-input>
+			  <el-form-item prop="username">
+			    <el-input v-model="loginFrom.username" prefix-icon="el-icon-user-solid"></el-input>
 			  </el-form-item>
 			  <!-- 密码 -->
-			  <el-form-item>
-			    <el-input></el-input>
+			  <el-form-item prop="password">
+			    <el-input type="password" v-model="loginFrom.password" prefix-icon="el-icon-lock"></el-input>
 			  </el-form-item>
 			  <!-- 按钮 -->
 			  <el-form-item class="button">
-			     <el-button type="primary">主要按钮</el-button>
-			     <el-button type="info">信息按钮</el-button>
+			     <el-button type="primary" @click="login">登录</el-button>
+			     <el-button type="info" @click="formRest" >重置</el-button>
 			  </el-form-item>
 			</el-form>
 		</div>
@@ -24,6 +24,58 @@
 </template>
 
 <script>
+	import Router from 'vue-router'
+	export default{
+		data(){
+			return {
+				loginFrom:{
+					username:"zhangsan",
+					password:"123456"
+				},
+				loginFromRules:{
+					username:[
+						 { required: true, message: '请输入用户名称', trigger: 'blur' },
+						 { min: 3, max: 15, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+					],
+					password:[
+						{ required: true, message: '请输入密码', trigger: 'blur' },
+						{ min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
+					]
+				}
+			}
+		},
+		methods:{
+			formRest(){
+				console.log(this);
+				this.$refs.loginFormRef.resetFields();
+			},
+			login() {
+				this.$refs.loginFormRef.validate(valid =>{
+					if(!valid){
+						return;
+					}else{
+						this.$http.post('http://localhost:8866/login',this.$qs.stringify(this.loginFrom))
+							.then(response =>{
+								if(response.status==200){
+									const tokenInfor = response.data.data.body;
+									const access_token = tokenInfor.access_token;
+									console.log(access_token)
+									window.sessionStorage.setItem("token", access_token);
+									this.$message.success("成功！")
+									console.log(this.$route)
+									this.$router.push("/home")
+								}else{
+									this.$message.error("失败！")
+								}
+							})
+							.catch(function (error) { // 请求失败处理
+								console.log(error);
+							});
+					}
+				});
+			}
+		}
+	}
 </script>
 
 <style lang="less" scoped="scoped">  /* scoped 当前页面生效 */
