@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<!-- <div>
 		<div class="header">
 			<h1>
 				欢迎光临Tiger俱乐部
@@ -10,7 +10,15 @@
 			<el-button type="infor" @click="logout">退出</el-button>
 			<span>欢迎{{}}</span>
 		</div>
-	</div>
+	</div> -->
+	<el-container>
+	  <el-header>Header</el-header><el-button type="infor" @click="logout">退出</el-button>
+	  <el-container>
+	    <el-aside width="200px">Aside</el-aside>
+	    <el-main>Main</el-main>
+	  </el-container>
+	</el-container>
+
 </template>
 
 <script>
@@ -21,7 +29,8 @@
 		methods: {
 			login() {
 				this.$router.push('/login');
-			},logout() {
+			},
+			logout() {
 				//清空token 
 				window.sessionStorage.clear();
 				//重定向到 登录页面
@@ -43,5 +52,11 @@
 		float: right;
 		margin-right: 30px;
 		margin-top: 30px;
+	}
+	.el-header{
+		background-color: #666666;
+	}
+	.el-aside{
+		background-color: #232323;
 	}
 </style>

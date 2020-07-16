@@ -14,7 +14,7 @@ import axios from "axios"
 
 //import ElementUI from 'element-ui'; //全部导入
 //以下是按照需要导入
-import {Form,FormItem,Input,Button,Message} from 'element-ui';
+import {Form,FormItem,Input,Button,Message,Header,Aside,Main,Container} from 'element-ui';
 Vue.prototype.$message = Message
 
 //Vue.use(ElementUI)
@@ -23,6 +23,10 @@ Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Input)
 Vue.use(Button)
+Vue.use(Header)
+Vue.use(Aside)
+Vue.use(Container)
+
 
 
 //axios.defaults.baseURL = "http://localhost:8866/"
