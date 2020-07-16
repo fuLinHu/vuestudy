@@ -24,7 +24,6 @@
 </template>
 
 <script>
-	import Router from 'vue-router'
 	export default{
 		data(){
 			return {
@@ -46,7 +45,6 @@
 		},
 		methods:{
 			formRest(){
-				console.log(this);
 				this.$refs.loginFormRef.resetFields();
 			},
 			login() {
@@ -63,7 +61,7 @@
 									window.sessionStorage.setItem("token", access_token);
 									this.$message.success("成功！")
 									console.log(this.$route)
-									this.$router.push("/home")
+									this.$router.go(-1); // 登录成功后，返回上次进入的页面；
 								}else{
 									this.$message.error("失败！")
 								}
