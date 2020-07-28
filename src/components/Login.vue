@@ -52,7 +52,7 @@
 					if(!valid){
 						return;
 					}else{
-						this.$http.post('http://localhost:8866/login',this.$qs.stringify(this.loginFrom))
+						this.$http.post('/login',this.$qs.stringify(this.loginFrom))
 							.then(response =>{
 								if(response.status==200){
 									const tokenInfor = response.data.data.body;

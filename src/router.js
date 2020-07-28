@@ -2,15 +2,40 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './components/Login.vue'
 import Home from './components/Home.vue'
+import Welcome from './components/Welcome.vue'
+import User from './components/user/user.vue'
+import Role from "./components/power/Role.vue"
+import Permission from "./components/power/Permission.vue"
 
-
-
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 Vue.use(Router)
 const router = new Router({
 	 routes:[
 		 {
 		 	 path:"/home",
-		 	 component:Home
+		 	 component:Home,
+			 redirect:"/welcome",
+			 children:[
+				 {
+					 path:"/welcome",
+					 component:Welcome
+				 },
+				 {
+					 path:"/user",
+					  component:User
+				 },
+				 {
+					 path:"/role",
+					 component:Role
+				 },
+				 {
+					 path:"/permission",
+					 component:Permission
+				 }
+			 ]
 	    },
 		{
 			path:"/",
