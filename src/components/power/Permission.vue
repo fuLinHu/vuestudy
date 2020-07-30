@@ -25,17 +25,38 @@
 						<el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
 						<!-- 删除 -->
 						<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteOpen(scope.row.id)"></el-button>
-						<!-- 分配角色 -->
-						<el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-							<el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
-						</el-tooltip>
 					</template>
 				</el-table-column>
 			</el-table>
-			<!-- <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pageNum"
+			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pageNum"
 			 :page-sizes="[1, 2, 5, 10]" :page-size="queryInfo.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-			</el-pagination> -->
+			</el-pagination>
 		</el-card>
+		
+		<!-- 修改权限Dialog标签 -->
+		<el-dialog title="修改权限" :visible.sync="editDialogVisible" width="30%" @close="editDialogClosed">
+			<!-- 内容主题区 -->
+			<el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px">
+				<el-form-item label="权限名称" prop="name">
+					<!-- prop验证规则参数 -->
+					<el-input v-model="editForm.name" disabled></el-input>
+				</el-form-item>
+				<el-form-item label="权限URL" prop="uri">
+					<!-- prop验证规则参数 -->
+					<el-input v-model="editForm.uri"></el-input>
+				</el-form-item>
+				<el-form-item label="权限CODE" prop="code">
+					<el-input v-model="editForm.code"></el-input>
+				</el-form-item>
+			</el-form>
+			<!-- 底部区 -->
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="editDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="editPermisssion">确 定</el-button>
+			</span>
+		</el-dialog>
+		
+		
 	</div>
 </template>
 
@@ -48,19 +69,81 @@
 					pageSize: 5,
 					pageNum: 1
 				},
-				permisssionList:[]
+				permisssionList:[],
+				total:0,
+				editDialogVisible:false,
+				addForm:{},
+				editForm:{},
+				editFormRules:{}
 			}
 		},
 		created(){
-			this.getPermisssion();
+			this.getPageList();
 		},
 		methods:{
-			getPermisssion(){
+			getPageList(){
 				debugger
-				this.$http.get(`${this.baseUrl}/page`,this.$qs.stringify(this.queryInfo))
+				this.$http.get(`${this.baseUrl}/page`,{params:this.queryInfo})
 				.then(respon=>{
 						this.permisssionList = respon.data.data.records;
+						this.total = respon.data.data.total;
 				})
+			},
+			handleSizeChange(newsize) {
+				/* 切换一页条数 */
+				console.log(newsize)
+				this.queryInfo.pageSize = newsize;
+				this.getPageList();
+			},
+			handleCurrentChange(newpage) {
+				/* 切换到第几页 */
+				console.log(newpage)
+				this.queryInfo.pageNum = newpage;
+				this.getPageList();
+			},
+			showEditDialog(id){
+				this.$http.get(`${this.baseUrl}/findById/${id}`).then(respon => {
+					if (respon.data.status == "888888") {
+						this.editForm = respon.data.data
+					} else {
+						return this.$message.error(`${respon.data.msg}`)
+					}
+				})
+				this.editDialogVisible = true;
+			},
+			deleteOpen(id) {
+				debugger
+				this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.$http.delete(`${this.baseUrl}/deleteById/${id}`).then(resopn=>{
+						if(resopn.data.status=="888888"){
+							this.$message({
+								type: 'success',
+								message: '删除成功!'
+							});
+							this.getPageList();
+						}else{
+							this.$message({
+								type: 'error',
+								message: `${resopn.data.msg}`
+							});
+						}
+					})
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消删除'
+					});
+				});
+			},
+			editDialogClosed(){
+				this.$refs.editFormRef.resetFields();
+			},
+			editPermisssion(){
+				
 			}
 		}
 	}

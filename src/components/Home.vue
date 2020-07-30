@@ -25,7 +25,7 @@
 				<div class="button-trogg" @click="menutrogger">|||</div>
 				<el-menu  background-color="#545c64" text-color="#fff" active-text-color="#0c24ff"
 				 :unique-opened="true" :collapse="ifcollapse" :collapse-transition="false" :router="true"
-				 default-active="/user">
+				 :default-active="activeNavStatus">
 					<!-- 一级菜单-->
 					<el-submenu :index="item.id +''" v-for="(item,index) in menuList" :key="item.id">
 						<!-- 一级菜单模板区-->
@@ -71,6 +71,7 @@
 			}
 		},
 		created() {
+			debugger
 			this.getMeunList();
 			this.activeNavStatus = window.sessionStorage.getItem("activeNavStatus");
 			

@@ -38,7 +38,7 @@
 						<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteOpen(scope.row.id)"></el-button>
 						<!-- 分配角色 -->
 						<el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-							<el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+							<el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetting(scope.row)"></el-button>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -106,6 +106,29 @@
 				<el-button type="primary" @click="editUser">确 定</el-button>
 			</span>
 		</el-dialog>
+		
+		<!-- setting分配角色 -->
+		<el-dialog title="分配角色" :visible.sync="settingDialogVisible" width="30%" @close="settingDialogClosed">
+			<div>
+				<p>当前用户名:{{userInfo.username}}</p>
+				<p>用户昵称:{{userInfo.nickname}}</p>
+				<p>分配角色:
+					 <el-select v-model="selectRolesData" placeholder="请选择">
+					    <el-option
+					      v-for="item in roleList"
+					      :key="item.id"
+					      :label="item.roleName"
+					      :value="item.id">
+					    </el-option>
+					  </el-select>
+				</p>
+			</div>
+			<!-- 底部区 -->
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="settingDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="allocateRole">确 定</el-button>
+			</span>
+		</el-dialog>
 
 	</div>
 
@@ -131,11 +154,13 @@
 					pageNum: 1
 				},
 				userList: [],
+				roleList:[],
 				total: 0,
 				/* 控制add对话框展示隐藏 */
 				addDialogVisible: false,
 				/* 控制edit对话框展示隐藏 */
 				editDialogVisible: false,
+				settingDialogVisible:false,
 				// 添加用户表单数据
 				addForm: {
 					username: "",
@@ -230,7 +255,9 @@
 							trigger: 'blur'
 						}
 					]
-				}
+				},
+				userInfo:{},
+				selectRolesData:[]
 
 			}
 		},
@@ -354,6 +381,48 @@
 						message: '已取消删除'
 					});
 				});
+			},
+			settingDialogClosed(){
+				
+			},
+			//点击确定按钮分配角色
+			allocateRole(){
+				this.$http.put(`${this.baseUrl}/allocateRole`,this.$qs.stringify({
+					id:this.userInfo.id,
+					roleId:this.selectRolesData
+				})).then(respon=>{
+					if(respon.data.status=="888888"){''
+						this.$message.success('分配角色成功')
+					}else{
+						this.$message.error(respon.data.msg)
+					}
+				})
+				this.settingDialogVisible = false;
+			},
+			showSetting(param){
+				debugger
+				this.userInfo=param;
+				this.$http.get(`${this.baseUrl}/roles`)
+				.then(respon=>{
+					if(respon.data.status=="888888"){
+						this.roleList = respon.data.data;
+					}else{
+						this.$message.error(respon.data.msg)
+					}
+				})
+				console.log(param)
+				// this.roleId = param.id;
+				// this.$http.get(`${this.baseUrl}/getAllPermissionTree`)
+				// .then(respon=>{
+				// 	if(respon.data.status!='888888'){
+				// 		this.$message.error("获取权限树形数据失败！");
+				// 	}else{
+				// 		this.treeList = respon.data.data;
+				// 		this.getDefaultKeys(param,this.defaultPerKeys);
+				// 		this.$message.success("获取权限树形数据成功！");
+				// 	}
+				// })
+				this.settingDialogVisible = true;
 			}
 		}
 	}
