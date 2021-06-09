@@ -57,6 +57,7 @@ const router = new Router({
 	 }
 	 const token = window.sessionStorage.getItem("token");
 	 if(!token) next("/login")
+	 window.sessionStorage.setItem("activeNavStatus",to.path);
 	 next()
  })
  

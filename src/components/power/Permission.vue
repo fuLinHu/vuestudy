@@ -8,6 +8,9 @@
 		</el-breadcrumb>
 		<!-- 卡片视图区 -->
 		<el-card>
+			<el-col :span="4" style="margin-bottom: 10px;">
+				<el-button type="primary" @click="showAddDialog">添加</el-button>
+			</el-col>
 			<el-table :data="permisssionList" border stripe>
 				<el-table-column type="index" width="50"></el-table-column>
 				<el-table-column label="权限名称" prop="name"></el-table-column>
@@ -39,7 +42,7 @@
 			<el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px">
 				<el-form-item label="权限名称" prop="name">
 					<!-- prop验证规则参数 -->
-					<el-input v-model="editForm.name" disabled></el-input>
+					<el-input v-model="editForm.name" ></el-input>
 				</el-form-item>
 				<el-form-item label="权限URL" prop="uri">
 					<!-- prop验证规则参数 -->
@@ -53,6 +56,35 @@
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="editDialogVisible = false">取 消</el-button>
 				<el-button type="primary" @click="editPermisssion">确 定</el-button>
+			</span>
+		</el-dialog>
+		
+		<!-- 添加权限Dialog标签 -->
+		<el-dialog title="添加权限" :visible.sync="addDialogVisible" width="30%" @close="addDialogClosed">
+			<!-- :before-close="handleClose" -->
+			<!-- 内容主题区 -->
+			<el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px" class="demo-ruleForm">
+				<el-form-item label="父权限" prop="name" style="min-height: 30px;">
+					<el-tree :data="treeList" :props="treeProps" :highlight-current="true" 
+					 node-key="id"   ref="treeRef" @node-click="nodeClick">
+					</el-tree>
+				</el-form-item>
+				<el-form-item label="权限名称" prop="name">
+					<!-- prop验证规则参数 -->
+					<el-input v-model="addForm.name" ></el-input>
+				</el-form-item>
+				<el-form-item label="权限URL" prop="uri">
+					<!-- prop验证规则参数 -->
+					<el-input v-model="addForm.uri"></el-input>
+				</el-form-item>
+				<el-form-item label="权限CODE" prop="code">
+					<el-input v-model="addForm.code"></el-input>
+				</el-form-item>
+			</el-form>
+			<!-- 底部区 -->
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="addDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="addPermission">确 定</el-button>
 			</span>
 		</el-dialog>
 		
@@ -72,9 +104,17 @@
 				permisssionList:[],
 				total:0,
 				editDialogVisible:false,
+				addDialogVisible:false,
 				addForm:{},
 				editForm:{},
-				editFormRules:{}
+				editFormRules:{},
+				addFormRules:{},
+				treeList:[],
+				treeProps:{
+					children: 'children',
+					label: 'name'
+				},
+				currentKey:""
 			}
 		},
 		created(){
@@ -144,10 +184,63 @@
 			},
 			editPermisssion(){
 				
+			},
+			addPermission(){
+				const currentNodeKey =   this.$refs.treeRef.getCurrentKey();
+				this.addForm.pid = currentNodeKey;
+				
+				this.$http.post(`${this.baseUrl}/save`,this.$qs.stringify(this.addForm))
+				.then(respon=>{
+					if(respon.data.status=='888888'){
+						this.$message.success("添加权限成功")
+						this.getPageList()
+					}else{
+						this.$message.error(respon.data.msg)
+					}
+				})
+				this.addDialogVisible = false;
+			},
+			showAddDialog(){
+				this.$http.get(`/tigerRole/getAllPermissionTree`)
+				.then(respon=>{
+					if(respon.data.status!='888888'){
+						this.$message.error("获取权限树形数据失败！");
+					}else{
+						this.treeList = respon.data.data;
+						//this.getDefaultKeys(role,this.defaultPerKeys);
+						this.$message.success("获取权限树形数据成功！");
+					}
+				})
+				this.addDialogVisible = true;
+				
+			},
+			addDialogClosed(){
+				
+			},
+			nodeClick(data){
+				
+				// if(this.currentKey){
+				//   const  newCurrentkey = this.$refs.treeRef.getCurrentKey();
+				// }
+				// this.currentKey =  this.$refs.treeRef.getCurrentKey();
+				// if(currentKey){
+				// 	this.$refs.treeRef.setCurrentKey(null)
+				// }else{
+					
+				// }
+				
 			}
 		}
 	}
 </script>
 
-<style>
+<style lang="less" >
+.el-tree{
+	max-height: 200px;
+    overflow-y: auto;
+    background-color: #f5edf0;
+}
+.el-tree-node:focus > .el-tree-node__content {
+  background-color: #ccc !important;
+} 
 </style>

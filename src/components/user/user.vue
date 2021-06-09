@@ -383,7 +383,8 @@
 				});
 			},
 			settingDialogClosed(){
-				
+				this.selectRolesData="";
+				this.userInfo = {};
 			},
 			//点击确定按钮分配角色
 			allocateRole(){
