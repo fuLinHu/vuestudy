@@ -28,7 +28,7 @@
 		data(){
 			return {
 				loginFrom:{
-					username:"zhangsan",
+					username:"fox",
 					password:"123456"
 				},
 				loginFromRules:{
@@ -52,7 +52,7 @@
 					if(!valid){
 						return;
 					}else{
-						this.$http.post('/login',this.$qs.stringify(this.loginFrom))
+						this.$http.post('/tiger/login',this.$qs.stringify(this.loginFrom))
 							.then(response =>{
 								if(response.status==200){
 									const tokenInfor = response.data.data.body;

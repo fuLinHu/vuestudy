@@ -88,8 +88,8 @@ Vue.use(Option)
 
 
 
-
-axios.defaults.baseURL = "http://localhost:8866/"
+//这个是网关对应的IP  端口
+axios.defaults.baseURL = "http://10.0.41.45:7880/"
 axios.defaults.timeout = 300000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 

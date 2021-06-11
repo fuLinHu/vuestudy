@@ -2,7 +2,7 @@
   <div class="total_div">
     <div class="imgs_div">
       <div class="left" style="width: 490px;">
-        <img class="left_img" src="../../assets/img/login_l.png">
+          <img src="../assets/logo.png" />
       </div>
       <div class="right">
         <div class="user_pwd">
@@ -30,7 +30,7 @@
           </div>
           <div class="con enterprise">
               <div class="qy_wrap">
-                  <img src="../../assets/img/qyImg.png">
+<!--                  <img src="../../assets/img/qyImg.png">-->
               </div>
           </div>
       </div>
@@ -50,7 +50,7 @@ export default{
   data(){
     return {
       userForm: {
-        username: "admin",
+        username: "fox",
         password: "123456",
       },
       rules: {
@@ -68,11 +68,11 @@ export default{
     login(){
       this.$refs.userFormRef.validate(valid => {
         if(!valid) return;
-        this.$axios.post('/authorization/login', this.$qs.stringify(this.userForm)
+          this.$http.post('/login', this.$qs.stringify(this.userForm)
         ).then(respose => {
             let loginResult = respose.data;
             if(loginResult.loginSuccess){ //登录成功
-              this.$axios.post('/authorization/oauth/token', this.$qs.stringify({
+                this.$http.post('/oauth/token', this.$qs.stringify({
                 username: this.userForm.username,
                 password: this.userForm.password,
                 client_id: "vue-cli",
@@ -83,7 +83,7 @@ export default{
                 if(access_token){
                   window.sessionStorage.setItem("token", access_token);
                   //获取用户权限信息
-                  this.$axios.get("/authorization/oauth/user").then(response => {
+                  this.$axios.get("/oauth/user").then(response => {
                     const result = response.data;
                     if(!result.error){
                       window.sessionStorage.setItem("permissions", result.permissions);
@@ -142,7 +142,7 @@ export default{
 
 <style>
   .total_div{
-    background: url(../../assets/img/login_bg.png)no-repeat;
+    /*#background: url(../../assets/img/login_bg.png)no-repeat;*/
     background-size: cover;
     overflow: hidden;
     width: 100%;
